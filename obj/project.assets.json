@@ -1055,11 +1055,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\工作\\条码转换-盛旺\\BarcodeTrans\\WinFormsApp1\\WinFormsApp1.csproj",
+      "projectUniqueName": "D:\\工作\\条码转换-盛旺\\BarcodeTrans\\1.0\\WinFormsApp1.csproj",
       "projectName": "FileFormatConversion",
-      "projectPath": "D:\\工作\\条码转换-盛旺\\BarcodeTrans\\WinFormsApp1\\WinFormsApp1.csproj",
+      "projectPath": "D:\\工作\\条码转换-盛旺\\BarcodeTrans\\1.0\\WinFormsApp1.csproj",
       "packagesPath": "C:\\Users\\Smore\\.nuget\\packages\\",
-      "outputPath": "D:\\工作\\条码转换-盛旺\\BarcodeTrans\\WinFormsApp1\\obj\\",
+      "outputPath": "D:\\工作\\条码转换-盛旺\\BarcodeTrans\\1.0\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

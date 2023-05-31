@@ -15,6 +15,8 @@ namespace WinFormsApp1
 {
     public partial class Form1 : Form
     {
+        string version = "v1.0.0";
+        string[] producer = { "思谋SmartMore", "X产品部" };
         public Form1()
         {
             InitializeComponent();
@@ -22,12 +24,16 @@ namespace WinFormsApp1
 
             ExcelPackage.LicenseContext = LicenseContext.Commercial;
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            this.Text = "格式转换  " + version + "  " + producer;
+            this.Text = "思谋读码器输出表格转换工具  " + version + "  " + producer[0];
+
+            minBarcodelist.Add("453");
+            minBarcodelist.Add("493");
         }
-        string version = "v1.0.0";
-        string producer = "思谋SmartMore";
         string selectedFile = "";
-        private void btn_readcsv_Click(object sender, EventArgs e)
+        string saveSelectedFile = "";
+        string barcodeContrastSelectedFile = "";
+        Dictionary<string, string[]> csvMesg = new Dictionary<string, string[]>();
+        private void tb_InTable_DoubleClick(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
@@ -41,13 +47,11 @@ namespace WinFormsApp1
             {
                 selectedFile = openFileDialog.FileName;
                 // 在这里处理选择的文件，例如将文件路径显示在标签(Label)控件上
-                label_Date.Text = selectedFile;
+                tb_InTable.Text = selectedFile;
             }
         }
-        Dictionary<string, string[]> csvMesg = new Dictionary<string, string[]>();
 
-        string saveSelectedFile = "";
-        private void btn_tran_Click(object sender, EventArgs e)
+        private void tb_OutTable_DoubleClick(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
@@ -61,18 +65,115 @@ namespace WinFormsApp1
             {
                 saveSelectedFile = openFileDialog.FileName;
                 // 在这里处理选择的文件，例如将文件路径显示在标签(Label)控件上
-                label_savepath.Text = saveSelectedFile;
+                tb_OutTable.Text = saveSelectedFile;
             }
-            csvMesg.Clear();
-            parse(selectedFile, saveSelectedFile);
         }
+        private void tb_BarcodeContrast_DoubleClick(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            // 设置对话框的属性
+            openFileDialog.Title = "选择条码对照表文件";
+            openFileDialog.Filter = "xlsx文件 (*.xlsx)|*.xlsx";
+            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            // 显示对话框并检查用户是否选择了文件
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                barcodeContrastSelectedFile = openFileDialog.FileName;
+                // 在这里处理选择的文件，例如将文件路径显示在标签(Label)控件上
+                tb_BarcodeContrast.Text = barcodeContrastSelectedFile;
+            }
+        }
+
+        private void btn_tran_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                csvMesg.Clear();
+                parse(selectedFile, saveSelectedFile);
+
+                MessageBox.Show("转换成功");
+            }
+            catch (Exception ee)
+            {
+                MessageBox.Show("转换失败" + ee.ToString());
+            }
+
+        }
+        /// <summary>
+        /// A B F
+        /// </summary>
+        Dictionary<string, string[]> BarcodeContrast = new Dictionary<string, string[]>();
+
+        private void btn_BarcodeContrast_Click(object sender, EventArgs e)
+        {
+            try
+            {
+
+                using (ExcelPackage package = new ExcelPackage(barcodeContrastSelectedFile))
+                {
+                    ExcelWorkbook workbook = package.Workbook;
+                    bool tempstate = false;
+                    foreach (ExcelWorksheet item in workbook.Worksheets)
+                    {
+                        if (item.Name == "对照表")
+                        {
+                            tempstate = true;
+                            break;
+                        }
+                    }
+                    if (!tempstate)
+                    {
+                        MessageBox.Show("该xlsx文件没有对照表的sheet");
+                        return;
+                    }
+                    ExcelWorksheet worksheet = workbook.Worksheets["对照表"];
+
+                    for (int i = 2; i < 2000000; i++)
+                    {
+                        if (worksheet.Cells[i, 4].Value != null &&
+                            worksheet.Cells[i, 4].Value.ToString().Trim() != "")
+                        {
+                            string temp = worksheet.Cells[i, 4].Value.ToString().Trim();
+                            if (BarcodeContrast.ContainsKey(temp))
+                            {
+                                BarcodeContrast[temp] = new string[] {  worksheet.Cells[i, 1].Value == null ? "" : worksheet.Cells[i, 1].Value.ToString().Trim(),
+                                                                    worksheet.Cells[i, 2].Value == null ? "" : worksheet.Cells[i, 2].Value.ToString().Trim(),
+                                                                    worksheet.Cells[i, 6].Value == null ? "" : worksheet.Cells[i, 6].Value.ToString().Trim()};
+                            }
+                            else
+                            {
+                                BarcodeContrast.Add(temp, new string[] {  worksheet.Cells[i, 1].Value == null ? "" : worksheet.Cells[i, 1].Value.ToString().Trim(),
+                                                                    worksheet.Cells[i, 2].Value == null ? "" : worksheet.Cells[i, 2].Value.ToString().Trim(),
+                                                                    worksheet.Cells[i, 6].Value == null ? "" : worksheet.Cells[i, 6].Value.ToString().Trim()});
+                            }
+                        }
+
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                MessageBox.Show("读取成功");
+            }
+            catch (Exception ee)
+            {
+                MessageBox.Show("读取失败" + ee.ToString());
+            }
+
+        }
+        List<string> minBarcodelist = new List<string>();
+
         private void parse(string csvFilePath, string xlsxFilePath)
         {
             string excelFilePath = xlsxFilePath;
             ;
             //string excelFilePath = csvFilePath.Substring(0, csvFilePath.LastIndexOf(".csv")) + ".xlsx";
             string currentSheetName = "";
-
+            List<string> correctedSheetName = new List<string>();//有修改过的sheet表
             Dictionary<string, List<string>> worksheetnames = new Dictionary<string, List<string>>();
 
 
@@ -91,7 +192,7 @@ namespace WinFormsApp1
                         int date_idx = 0;
                         int okng_idx = 1;
                         int barcode_data_idx = 4;
-                        if (values[okng_idx].Trim() == "" || values[okng_idx].Trim() == "NG")
+                        if (values[okng_idx].Trim() == "" || values[okng_idx].Trim().Contains("NG"))
                         {
                             continue;
                         }
@@ -138,12 +239,16 @@ namespace WinFormsApp1
                     }
                 }
                 //int row = 1;
-                //写入xlsx
+                //A-F写入xlsx
                 foreach (string item in csvMesg.Keys)
                 {
                     bool new_sheet = false;
                     string date = item.Substring(4, item.IndexOf('_') - 4);
                     currentSheetName = date;
+                    if (!correctedSheetName.Contains(currentSheetName))
+                    {
+                        correctedSheetName.Add(currentSheetName);
+                    }
                     ExcelWorksheet worksheet;
                     if (!worksheetnames.ContainsKey(date))
                     {
@@ -241,17 +346,249 @@ namespace WinFormsApp1
                         rows++;
                         worksheetnames[currentSheetName][0] = rows.ToString();
                     }
+                }
 
+                //清空H-M
+                foreach (string item in correctedSheetName)
+                {
+                    workbook.Worksheets[item].DeleteColumn(8, 12);
+                }
+                //
+                foreach (string item in correctedSheetName)
+                {
+                    ExcelWorksheet worksheet = workbook.Worksheets[item];
+
+                    Dictionary<string, int> FbarcodeNum = new Dictionary<string, int>();
+                    Dictionary<string, string[]> FMaxBarcodeNum = new Dictionary<string, string[]>();
+                    Dictionary<string, string[]> FMinBarcodeNum = new Dictionary<string, string[]>();
+                    Dictionary<string, string[]> FOtherBarcodeNum = new Dictionary<string, string[]>();
+                    for (int i = 2; i < 2000000; i++)
+                    {
+                        if (worksheet.Cells[i, 6].Value != null && worksheet.Cells[i, 6].Value.ToString().Trim() != "")
+                        {
+                            string barcode = worksheet.Cells[i, 6].Value.ToString().Trim();
+                            if (true)
+                            {
+
+                            }
+                            if (FbarcodeNum.ContainsKey(barcode))
+                            {
+                                FbarcodeNum[barcode]++;
+                            }
+                            else
+                            {
+                                FbarcodeNum.Add(barcode, 1);
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    //排序 从小到大
+                    FbarcodeNum = FbarcodeNum.OrderBy(item => item.Key).ToDictionary(item => item.Key, item => item.Value);
+                    //细分到 大码、小码、其他码
+                    foreach (string key in FbarcodeNum.Keys)
+                    {
+                        if (!BarcodeContrast.ContainsKey(key))
+                        {
+                            if (!FOtherBarcodeNum.ContainsKey(key))
+                            {
+                                FOtherBarcodeNum.Add(key, new string[] { "", "", "", FbarcodeNum[key].ToString() });
+                            }
+                        }
+                        else
+                        {
+                            if (minBarcodelist.Contains(BarcodeContrast[key][0]))
+                            {
+                                FMinBarcodeNum.Add(key, new string[] { BarcodeContrast[key][0] + "-" + BarcodeContrast[key][1], BarcodeContrast[key][2], "6mm X 6mm", FbarcodeNum[key].ToString() });
+                            }
+                            else
+                            {
+                                FMaxBarcodeNum.Add(key, new string[] { BarcodeContrast[key][0] + "-" + BarcodeContrast[key][1], BarcodeContrast[key][2], "10mm X 10mm", FbarcodeNum[key].ToString() });
+
+                            }
+                        }
+
+                    }
+                    //写入到sheet中
+                    //标题
+                    int rows = 1; int num = 0; int maxnum = 0; int minnum = 0; int othernum = 0;
+                    setCell(worksheet.Cells[rows, 8], new string[] { "不同", "Barcode" }, new string[] { "等线", "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
+                    setCell(worksheet.Cells[rows, 9], new string[] { "轮型&模号" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
+                    setCell(worksheet.Cells[rows, 10], new string[] { "客户" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
+                    setCell(worksheet.Cells[rows, 11], new string[] { "码大小" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
+                    setCell(worksheet.Cells[rows, 12], new string[] { "数量" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
+                    rows++;
+                    //大码数据
+                    if (FMaxBarcodeNum.Count > 0)
+                    {
+                        foreach (string key in FMaxBarcodeNum.Keys)
+                        {
+                            setCell(worksheet.Cells[rows, 8], new string[] { key }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
+                            for (int i = 0; i < 4; i++)
+                            {
+                                setCell(worksheet.Cells[rows, i + 9], new string[] { FMaxBarcodeNum[key][i] }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
+                            }
+                            maxnum += Convert.ToInt32(FMaxBarcodeNum[key][3]);
+                            rows++;
+                        }
+                        //大码小计
+                        for (int i = 0; i < 3; i++)
+                        {
+                            for (int j = 0; j < 5; j++)
+                            {
+                                setCell(worksheet.Cells[rows + i, j + 8], new string[] { "" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
+                            }
+                        }
+                        setCell(worksheet.Cells[rows, 11], new string[] { "已读出数量：" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
+                        setCell(worksheet.Cells[rows, 12], new string[] { maxnum.ToString() }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
+                        rows++;
+                        setCell(worksheet.Cells[rows, 11], new string[] { "未读出数量：" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
+                        setCell(worksheet.Cells[rows, 12], new string[] { "0" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
+                        rows++;
+                        setCell(worksheet.Cells[rows, 11], new string[] { "小计：" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
+                        setCell(worksheet.Cells[rows, 12], new string[] { maxnum.ToString() }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
+                        setCell(worksheet.Cells[rows, 13], new string[] { "100%" }, new string[] { "Arial" }, 11, false, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
+                        rows++;
+                    }
+
+                    //小码数据
+                    if (FMinBarcodeNum.Count > 0)
+                    {
+                        foreach (string key in FMinBarcodeNum.Keys)
+                        {
+                            setCell(worksheet.Cells[rows, 8], new string[] { key }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Yellow, true);
+                            for (int i = 0; i < 4; i++)
+                            {
+                                setCell(worksheet.Cells[rows, i + 9], new string[] { FMinBarcodeNum[key][i] }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Yellow, true);
+                            }
+                            minnum += Convert.ToInt32(FMinBarcodeNum[key][3]);
+                            rows++;
+                        }
+                        //小码小计
+                        for (int i = 0; i < 3; i++)
+                        {
+                            for (int j = 0; j < 5; j++)
+                            {
+                                setCell(worksheet.Cells[rows + i, j + 8], new string[] { "" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Yellow, true);
+                            }
+                        }
+                        setCell(worksheet.Cells[rows, 11], new string[] { "已读出数量：" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Yellow, true);
+                        setCell(worksheet.Cells[rows, 12], new string[] { minnum.ToString() }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Yellow, true);
+                        rows++;
+                        setCell(worksheet.Cells[rows, 11], new string[] { "未读出数量：" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Yellow, true);
+                        setCell(worksheet.Cells[rows, 12], new string[] { "0" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Yellow, true);
+                        rows++;
+                        setCell(worksheet.Cells[rows, 11], new string[] { "小计：" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Yellow, true);
+                        setCell(worksheet.Cells[rows, 12], new string[] { minnum.ToString() }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Yellow, true);
+                        setCell(worksheet.Cells[rows, 13], new string[] { "100%" }, new string[] { "Arial" }, 11, false, ExcelHorizontalAlignment.CenterContinuous, Color.Yellow, true);
+                        rows++;
+                    }
+
+                    //其他小计
+                    if (FOtherBarcodeNum.Count > 0)
+                    {
+                        //其他数据
+                        foreach (string key in FOtherBarcodeNum.Keys)
+                        {
+                            setCell(worksheet.Cells[rows, 8], new string[] { key }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Coral, true);
+                            for (int i = 0; i < 4; i++)
+                            {
+                                setCell(worksheet.Cells[rows, i + 9], new string[] { FOtherBarcodeNum[key][i] }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Coral, true);
+                            }
+                            othernum += Convert.ToInt32(FOtherBarcodeNum[key][3]);
+                            rows++;
+                        }
+                        //其他小计
+                        for (int i = 0; i < 3; i++)
+                        {
+                            for (int j = 0; j < 5; j++)
+                            {
+                                setCell(worksheet.Cells[rows + i, j + 8], new string[] { "" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Coral, true);
+                            }
+                        }
+                        setCell(worksheet.Cells[rows, 11], new string[] { "已读出数量：" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Coral, true);
+                        setCell(worksheet.Cells[rows, 12], new string[] { othernum.ToString() }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Coral, true);
+                        rows++;
+                        setCell(worksheet.Cells[rows, 11], new string[] { "未读出数量：" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Coral, true);
+                        setCell(worksheet.Cells[rows, 12], new string[] { "0" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Coral, true);
+                        rows++;
+                        setCell(worksheet.Cells[rows, 11], new string[] { "小计：" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Coral, true);
+                        setCell(worksheet.Cells[rows, 12], new string[] { othernum.ToString() }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Coral, true);
+                        setCell(worksheet.Cells[rows, 13], new string[] { "100%" }, new string[] { "Arial" }, 11, false, ExcelHorizontalAlignment.CenterContinuous, Color.Coral, true);
+                        rows++;
+                    }
+                    //汇总
+                    for (int i = 0; i < 5; i++)
+                    {
+                        setCell(worksheet.Cells[rows, i + 8], new string[] { "" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Lime, true);
+                    }
+                    setCell(worksheet.Cells[rows, 11], new string[] { "合计：" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Lime, true);
+                    setCell(worksheet.Cells[rows, 12], new string[] { (maxnum + minnum + othernum).ToString() }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Lime, true);
+
+                    int startRow = 2;
+                    int endRow = 8;
+                    int startCol = 1;
+                    int endCol = 4;
+
+                    // 设置边框样式为实线
+                    var border = worksheet.Cells[1, 8, rows, 12].Style.Border;
+
+                    border.Top.Style = border.Left.Style = border.Bottom.Style = border.Right.Style = ExcelBorderStyle.Thin;
+                    ;
+                    border.BorderAround(ExcelBorderStyle.Medium);
+
+                    worksheet.Column(7).Width = 0.46;
+                    worksheet.Column(8).Width = 15;
+                    worksheet.Column(9).Width = 15;
+                    worksheet.Column(10).Width = 15;
+                    worksheet.Column(11).Width = 15;
+                    worksheet.Column(12).Width = 8.38;
 
                 }
+
+
+
+
+                //sheet表以名字排序
+                List<string> sheetNames = new List<string>();
+                foreach (var sheet in workbook.Worksheets)
+                {
+                    sheetNames.Add(sheet.Name);
+                }
+                sheetNames.Sort();
+                foreach (var sheetName in sheetNames)
+                {
+                    workbook.Worksheets.MoveToStart(sheetName);
+                }
+
+
                 // 保存Excel文件
                 FileInfo excelFile = new FileInfo(excelFilePath);
                 package.SaveAs(excelFile);
-
                 label_savepath.Text += "转换完成";
             }
+        }
 
+        public static void setCell(ExcelRange cell, string[] values, string[] fonts, int size, bool bold, ExcelHorizontalAlignment Horizon, Color color, bool setcolor = false)
+        {
+            if (values.Length > 1)
+            {
+                setCellFont(cell, size, bold, Horizon, fonts[0], color, setcolor);
+                cell.IsRichText = true;
+                for (int i = 0; i < values.Length; i++)
+                {
+                    var part = cell.RichText.Add(values[i]);
+                    part.FontName = fonts[i];
+                }
+            }
+            else
+            {
+                cell.Value = values[0];
+                setCellFont(cell, size, bold, Horizon, fonts[0], color, setcolor);
 
+            }
         }
 
         public static void setCellFont(ExcelRange cell, int size, bool bold, ExcelHorizontalAlignment Horizon, string fontName, Color color, bool setcolor = false)
@@ -275,5 +612,12 @@ namespace WinFormsApp1
             column.Style.Font.Name = fontName;
             column.Style.WrapText = true;
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+
     }
 }
