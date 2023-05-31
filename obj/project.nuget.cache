@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "n1CwNzqSvctN24Re+6k28K0If7RxoNvjEO11lLzMB1QdK8cu1EC63lCtw9ciBt/UW2o+04K3LPalMQPWSud2HA==",
+  "dgSpecHash": "73TdTNm4QBGvQiqRLCxCkKQBG/s1aSSMHR59xv+sMBIDsLiyVXFt0OkihfY6qJ398QTGVGZSMRLQv5fqa4fVAw==",
   "success": true,
-  "projectFilePath": "D:\\工作\\条码转换-盛旺\\BarcodeTrans\\1.0\\WinFormsApp1.csproj",
+  "projectFilePath": "D:\\工作\\条码转换-盛旺\\SMBarcodeFileTranTool\\WinFormsApp1.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Smore\\.nuget\\packages\\epplus\\6.2.4\\epplus.6.2.4.nupkg.sha512",
     "C:\\Users\\Smore\\.nuget\\packages\\epplus.interfaces\\6.1.1\\epplus.interfaces.6.1.1.nupkg.sha512",

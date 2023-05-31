@@ -29,6 +29,11 @@ namespace WinFormsApp1
             minBarcodelist.Add("453");
             minBarcodelist.Add("493");
         }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
         string selectedFile = "";
         string saveSelectedFile = "";
         string barcodeContrastSelectedFile = "";
@@ -413,7 +418,8 @@ namespace WinFormsApp1
                     }
                     //写入到sheet中
                     //标题
-                    int rows = 1; int num = 0; int maxnum = 0; int minnum = 0; int othernum = 0;
+                    int rows = 1; int maxnum = 0; int minnum = 0; int othernum = 0;
+                    string huizong = "";
                     setCell(worksheet.Cells[rows, 8], new string[] { "不同", "Barcode" }, new string[] { "等线", "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
                     setCell(worksheet.Cells[rows, 9], new string[] { "轮型&模号" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
                     setCell(worksheet.Cells[rows, 10], new string[] { "客户" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
@@ -448,8 +454,12 @@ namespace WinFormsApp1
                         setCell(worksheet.Cells[rows, 12], new string[] { "0" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
                         rows++;
                         setCell(worksheet.Cells[rows, 11], new string[] { "小计：" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
-                        setCell(worksheet.Cells[rows, 12], new string[] { maxnum.ToString() }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
-                        setCell(worksheet.Cells[rows, 13], new string[] { "100%" }, new string[] { "Arial" }, 11, false, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
+                        setCell(worksheet.Cells[rows, 12], new string[] { "" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
+                        setCell(worksheet.Cells[rows, 13], new string[] { "" }, new string[] { "Arial" }, 11, false, ExcelHorizontalAlignment.CenterContinuous, Color.Cyan, true);
+                        worksheet.Cells[rows, 12].Formula = "L" + (rows - 2).ToString() + "+" + "L" + (rows - 1).ToString();
+                        worksheet.Cells[rows, 13].Formula = "L" + (rows - 2).ToString() + "/" + "L" + (rows).ToString();
+                        worksheet.Cells[rows, 13].Style.Numberformat.Format = "0%";
+                        huizong += "L" + (rows - 2).ToString() + "+" + "L" + (rows - 1).ToString() + "+";
                         rows++;
                     }
 
@@ -481,8 +491,12 @@ namespace WinFormsApp1
                         setCell(worksheet.Cells[rows, 12], new string[] { "0" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Yellow, true);
                         rows++;
                         setCell(worksheet.Cells[rows, 11], new string[] { "小计：" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Yellow, true);
-                        setCell(worksheet.Cells[rows, 12], new string[] { minnum.ToString() }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Yellow, true);
-                        setCell(worksheet.Cells[rows, 13], new string[] { "100%" }, new string[] { "Arial" }, 11, false, ExcelHorizontalAlignment.CenterContinuous, Color.Yellow, true);
+                        setCell(worksheet.Cells[rows, 12], new string[] { ""}, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Yellow, true);
+                        setCell(worksheet.Cells[rows, 13], new string[] { "" }, new string[] { "Arial" }, 11, false, ExcelHorizontalAlignment.CenterContinuous, Color.Yellow, true);
+                        worksheet.Cells[rows, 12].Formula = "L" + (rows - 2).ToString() + "+" + "L" + (rows - 1).ToString();
+                        worksheet.Cells[rows, 13].Formula = "L" + (rows - 2).ToString() + "/" + "L" + (rows).ToString();
+                        worksheet.Cells[rows, 13].Style.Numberformat.Format = "0%";
+                        huizong += "L" + (rows - 2).ToString() + "+" + "L" + (rows - 1).ToString() + "+";
                         rows++;
                     }
 
@@ -515,8 +529,13 @@ namespace WinFormsApp1
                         setCell(worksheet.Cells[rows, 12], new string[] { "0" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Coral, true);
                         rows++;
                         setCell(worksheet.Cells[rows, 11], new string[] { "小计：" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Coral, true);
-                        setCell(worksheet.Cells[rows, 12], new string[] { othernum.ToString() }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Coral, true);
-                        setCell(worksheet.Cells[rows, 13], new string[] { "100%" }, new string[] { "Arial" }, 11, false, ExcelHorizontalAlignment.CenterContinuous, Color.Coral, true);
+                        setCell(worksheet.Cells[rows, 12], new string[] { "" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Coral, true);
+                        setCell(worksheet.Cells[rows, 13], new string[] { "" }, new string[] { "Arial" }, 11, false, ExcelHorizontalAlignment.CenterContinuous, Color.Coral, true);
+
+                        worksheet.Cells[rows, 12].Formula = "L" + (rows - 2).ToString() + "+" + "L" + (rows - 1).ToString();
+                        worksheet.Cells[rows, 13].Formula = "L" + (rows - 2).ToString() + "/" + "L" + (rows).ToString();
+                        worksheet.Cells[rows, 13].Style.Numberformat.Format = "0%";
+                        huizong += "L" + (rows - 2).ToString() + "+" + "L" + (rows - 1).ToString() + "+";
                         rows++;
                     }
                     //汇总
@@ -525,8 +544,8 @@ namespace WinFormsApp1
                         setCell(worksheet.Cells[rows, i + 8], new string[] { "" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Lime, true);
                     }
                     setCell(worksheet.Cells[rows, 11], new string[] { "合计：" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Lime, true);
-                    setCell(worksheet.Cells[rows, 12], new string[] { (maxnum + minnum + othernum).ToString() }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Lime, true);
-
+                    setCell(worksheet.Cells[rows, 12], new string[] { "" }, new string[] { "Arial" }, 11, true, ExcelHorizontalAlignment.CenterContinuous, Color.Lime, true);
+                    worksheet.Cells[rows, 12].Formula = huizong.Substring(0, huizong.Length-1);
                     int startRow = 2;
                     int endRow = 8;
                     int startCol = 1;
@@ -613,10 +632,7 @@ namespace WinFormsApp1
             column.Style.WrapText = true;
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
+        
 
 
     }
