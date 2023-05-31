@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "dgSpecHash": "1p5La/BLKJUe8LfruhyWiQC4eq4vp7eJ1rDXyLdA2lveofElzwckG+mjZqqB4Y3w2jLOds4wVMF6AioywSVHWA==",
+  "success": true,
+  "projectFilePath": "D:\\工作\\条码转换-盛旺\\BarcodeTrans\\WinFormsApp1\\WinFormsApp1.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Smore\\.nuget\\packages\\epplus\\6.2.4\\epplus.6.2.4.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\epplus.interfaces\\6.1.1\\epplus.interfaces.6.1.1.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\epplus.system.drawing\\6.1.1\\epplus.system.drawing.6.1.1.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\microsoft.extensions.configuration\\3.1.30\\microsoft.extensions.configuration.3.1.30.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\3.1.30\\microsoft.extensions.configuration.abstractions.3.1.30.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\microsoft.extensions.configuration.fileextensions\\3.1.30\\microsoft.extensions.configuration.fileextensions.3.1.30.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\microsoft.extensions.configuration.json\\3.1.30\\microsoft.extensions.configuration.json.3.1.30.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\microsoft.extensions.fileproviders.abstractions\\3.1.30\\microsoft.extensions.fileproviders.abstractions.3.1.30.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\microsoft.extensions.fileproviders.physical\\3.1.30\\microsoft.extensions.fileproviders.physical.3.1.30.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\microsoft.extensions.filesystemglobbing\\3.1.30\\microsoft.extensions.filesystemglobbing.3.1.30.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\microsoft.extensions.primitives\\3.1.30\\microsoft.extensions.primitives.3.1.30.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\microsoft.io.recyclablememorystream\\2.2.1\\microsoft.io.recyclablememorystream.2.2.1.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\microsoft.netcore.platforms\\3.1.9\\microsoft.netcore.platforms.3.1.9.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\microsoft.netcore.targets\\1.1.0\\microsoft.netcore.targets.1.1.0.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\microsoft.win32.systemevents\\4.7.0\\microsoft.win32.systemevents.4.7.0.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\system.drawing.common\\4.7.3\\system.drawing.common.4.7.3.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\system.drawing.primitives\\4.3.0\\system.drawing.primitives.4.3.0.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\system.runtime\\4.3.0\\system.runtime.4.3.0.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\system.runtime.extensions\\4.3.0\\system.runtime.extensions.4.3.0.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\system.security.cryptography.cng\\4.7.0\\system.security.cryptography.cng.4.7.0.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\system.security.cryptography.pkcs\\4.7.0\\system.security.cryptography.pkcs.4.7.0.nupkg.sha512",
+    "C:\\Users\\Smore\\.nuget\\packages\\system.text.encoding.codepages\\4.7.1\\system.text.encoding.codepages.4.7.1.nupkg.sha512"
+  ],
+  "logs": []
+}
